@@ -7,6 +7,10 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+#define PACKET_BUF_SZ 4096
+
+const char HTTP_OK[] = "HTTP/1.1 200 OK\r\n\r\n";
+
 int main() {
   // Disable output buffering
   setbuf(stdout, NULL);
@@ -57,6 +61,17 @@ int main() {
 
   accept(server_fd, (struct sockaddr *)&client_addr, &client_addr_len);
   printf("Client connected\n");
+
+  char recvBuf[PACKET_BUF_SZ];
+  int ret;
+
+  ret = read(server_fd, recvBuf, PACKET_BUF_SZ);
+  if (ret < 0) {
+    perror("read from socket failed");
+    return 1;
+  }
+  printf("sending OK\n");
+  ret = write(server_fd, HTTP_OK, sizeof(HTTP_OK) / sizeof(char));
 
   close(server_fd);
 
