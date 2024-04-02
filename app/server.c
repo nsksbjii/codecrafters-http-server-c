@@ -77,6 +77,7 @@ int main() {
     } else if (pid == 0) { // child
       close(server_fd);
       handleConnection(current_sock);
+      return 0;
     } else {
       close(current_sock);
     }
