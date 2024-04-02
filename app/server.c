@@ -111,6 +111,7 @@ int handleConnection(int current_sock) {
   if (request->method == GET) {
     if (request->path[0] == '/' && request->path[1] == '\0') {
       printf("sending OK\n");
+      printf("%s\n", HTTP_OK);
       ret = write(current_sock, HTTP_OK, sizeof(HTTP_OK) / sizeof(char));
     } else {
       char *path1 = strtok(request->path, "/");
