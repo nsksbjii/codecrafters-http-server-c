@@ -58,26 +58,35 @@ http_request *parseRequest(char *request) {
     free(parsedResponse);
     return NULL;
   }
+  printf("gotversion: %s\n", version);
   char *version_end = strcpy(parsedResponse->http_version, version);
   if (!path_end) {
     perror("FUCK");
+    return NULL;
   }
   size_t version_len = parsedResponse->http_version - version_end;
 
   // parse host line
-  char *host_end = strcpy(parsedResponse->host, (line2 + 6));
-  if (!host_end) {
-    perror("FUCK");
+  if (line2) {
+    char *host_end = strcpy(parsedResponse->host, (line2 + 6));
+    if (!host_end) {
+      perror("FUCK");
+      return NULL;
+    }
+    size_t host_len = parsedResponse->host - host_end;
+    printf("gothost: %s\n", parsedResponse->host);
   }
-  size_t host_len = parsedResponse->host - host_end;
 
-  // parse user agent line
-
-  char *user_end = strcpy(parsedResponse->user_agent, (line3 + 12));
-  if (!user_end) {
-    perror("FUCK");
+  if (line3) {
+    // parse user agent line
+    char *user_end = strcpy(parsedResponse->user_agent, (line3 + 12));
+    if (!user_end) {
+      perror("FUCK");
+      return NULL;
+    }
+    size_t user_len = parsedResponse->user_agent - user_end;
   }
-  size_t user_len = parsedResponse->user_agent - user_end;
 
+  printf("returning requeest struct\n");
   return parsedResponse;
 }

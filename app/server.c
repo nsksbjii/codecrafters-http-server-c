@@ -100,15 +100,16 @@ int handleConnection(int current_sock) {
     return 1;
   }
 
-#ifdef DEBUG
+  // #ifdef DEBUG
   printf("parsed request:\n");
   printf("Method: %s\n", (request->method == GET) ? "GET" : "unknown");
   printf("path: %s\n", request->path);
   printf("host: %s\n", request->host);
   printf("user-agent: %s\n", request->user_agent);
-#endif
+  // #endif
 
   if (request->method == GET) {
+    printf("processing GET request\n");
     if (request->path[0] == '/' && request->path[1] == '\0') {
       printf("sending OK\n");
       printf("%s\n", HTTP_OK);
