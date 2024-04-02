@@ -1,3 +1,4 @@
+#include "handlers.h"
 #include "http.h"
 #include <errno.h>
 #include <netinet/in.h>
@@ -94,9 +95,18 @@ int main() {
       printf("sending OK\n");
       ret = write(current_sock, HTTP_OK, sizeof(HTTP_OK) / sizeof(char));
     } else {
-      printf("sending 404\n");
+      char *path1 = strtok(request->path, "/");
+      printf("%s\n", path1);
+      if (strcmp(path1, "echo") == 0) {
+        printf("calling echo hadler!\n");
+        path1 = strtok(NULL, "/");
+        echoHandler(path1, current_sock);
+      } else {
 
-      ret = write(current_sock, HTTP_404, sizeof(HTTP_404) / sizeof(char));
+        printf("sending 404\n");
+
+        ret = write(current_sock, HTTP_404, sizeof(HTTP_404) / sizeof(char));
+      }
     }
     if (ret < 0) {
       perror("writing to socket failed!");
