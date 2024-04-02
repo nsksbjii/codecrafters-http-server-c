@@ -19,8 +19,17 @@ http_request *parseRequest(char *request) {
     perror("requestinit failed");
     return NULL;
   }
+  char *line1 = strtok(request, "\r\n");
+  char *line2 = strtok(NULL, "\r\n");
+  char *line3 = strtok(NULL, "\r\n");
 
-  char *method = strtok(request, " ");
+  printf("requestlines:\n");
+  printf("line1: %s\n", line1);
+  printf("line2: %s\n", line2);
+  printf("line3: %s\n", line3);
+
+  // parse first line of request GET / HTTPV1.1
+  char *method = strtok(line1, " ");
   if (strcmp(method, "GET") == 0) {
     printf("Got HTTP GET request\n");
     parsedResponse->method = GET;
@@ -44,7 +53,7 @@ http_request *parseRequest(char *request) {
   size_t path_len = parsedResponse->path - path_end;
 
   char *version = strtok(NULL, " ");
-  if (path == NULL) {
+  if (version == NULL) {
     fprintf(stderr, "failed to parse version: %s\n", version);
     free(parsedResponse);
     return NULL;
@@ -54,6 +63,21 @@ http_request *parseRequest(char *request) {
     perror("FUCK");
   }
   size_t version_len = parsedResponse->http_version - version_end;
+
+  // parse host line
+  char *host_end = strcpy(parsedResponse->host, (line2 + 6));
+  if (!host_end) {
+    perror("FUCK");
+  }
+  size_t host_len = parsedResponse->host - host_end;
+
+  // parse user agent line
+
+  char *user_end = strcpy(parsedResponse->user_agent, (line3 + 12));
+  if (!user_end) {
+    perror("FUCK");
+  }
+  size_t user_len = parsedResponse->user_agent - user_end;
 
   return parsedResponse;
 }

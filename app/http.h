@@ -17,6 +17,8 @@ typedef struct {
   HTTP_METHOD method;
   char path[512];
   char http_version[256];
+  char host[256];
+  char user_agent[1024];
 } http_request;
 
 http_request *parseRequest(char *request);

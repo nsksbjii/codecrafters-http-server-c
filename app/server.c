@@ -88,6 +88,8 @@ int main() {
   printf("parsed request:\n");
   printf("Method: %s\n", (request->method == GET) ? "GET" : "unknown");
   printf("path: %s\n", request->path);
+  printf("host: %s\n", request->host);
+  printf("user-agent: %s\n", request->user_agent);
 #endif
 
   if (request->method == GET) {
@@ -102,6 +104,11 @@ int main() {
         path1 = strtok(NULL, "/");
         path1[strlen(path1)] = '/';
         echoHandler(path1, current_sock);
+      } else if (strcmp(path1, "user-agent") == 0) {
+
+        printf("returning user agent!\n");
+        userAgentHandler(request->user_agent, current_sock);
+
       } else {
 
         printf("sending 404\n");

@@ -35,3 +35,35 @@ int echoHandler(char *toEcho, int sock) {
   }
   return ret;
 }
+
+int userAgentHandler(char *user_agent, int sock) {
+  if (user_agent == NULL) {
+    fprintf(stderr, "userAgentHandler: user_agent is NULL!\n");
+    return -1;
+  }
+  printf("userAgentHandler:choing %s\n", user_agent);
+
+  int bodyLen = strlen(user_agent);
+  printf("echo str is %d long\n", bodyLen);
+  if (bodyLen < 0) {
+    fprintf(stderr, "userAgentHandler: echo len is 0!\n");
+    return -1;
+  }
+
+  char reposeBuf[REPONSE_BUF_SZ];
+  int respSize = sprintf(reposeBuf,
+                         "HTTP/1.1 200 OK\r\nContent-Type: "
+                         "text/plain\r\nContent-Length: %d\r\n\r\n%s\r\n",
+                         bodyLen, user_agent);
+  if (respSize < 0) {
+    fprintf(stderr, "userAgentHandler: failed to construct response!\n");
+    return -1;
+  }
+  int ret = write(sock, reposeBuf, respSize);
+  if (ret != respSize) {
+    perror("write to socket failed");
+    return -1;
+  }
+  return ret;
+  return 0;
+}
