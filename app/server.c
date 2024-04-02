@@ -21,7 +21,7 @@ int main() {
 
   // Uncomment this block to pass the first stage
 
-  int server_fd, client_addr_len;
+  unsigned int server_fd, client_addr_len;
   struct sockaddr_in client_addr;
 
   server_fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -32,7 +32,7 @@ int main() {
 
   // Since the tester restarts your program quite often, setting REUSE_PORT
   // ensures that we don't run into 'Address already in use' errors
-  int reuse = 1;
+  unsigned int reuse = 1;
   if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEPORT, &reuse, sizeof(reuse)) <
       0) {
     printf("SO_REUSEPORT failed: %s \n", strerror(errno));
@@ -59,19 +59,26 @@ int main() {
   printf("Waiting for a client to connect...\n");
   client_addr_len = sizeof(client_addr);
 
-  accept(server_fd, (struct sockaddr *)&client_addr, &client_addr_len);
+  int current_sock =
+      accept(server_fd, (struct sockaddr *)&client_addr, &client_addr_len);
+  if (current_sock < 0) {
+    perror("accept");
+    return 1;
+  }
   printf("Client connected\n");
 
   char recvBuf[PACKET_BUF_SZ];
   int ret;
 
-  ret = read(server_fd, recvBuf, PACKET_BUF_SZ);
+  ret = read(current_sock, recvBuf, PACKET_BUF_SZ);
   if (ret < 0) {
     perror("read from socket failed");
     return 1;
   }
+
+  printf("%s\n", recvBuf);
   printf("sending OK\n");
-  ret = write(server_fd, HTTP_OK, sizeof(HTTP_OK) / sizeof(char));
+  ret = write(current_sock, HTTP_OK, sizeof(HTTP_OK) / sizeof(char));
 
   close(server_fd);
 
