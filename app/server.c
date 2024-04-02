@@ -1,3 +1,4 @@
+#include "http.h"
 #include <errno.h>
 #include <netinet/in.h>
 #include <netinet/ip.h>
@@ -8,8 +9,7 @@
 #include <unistd.h>
 
 #define PACKET_BUF_SZ 4096
-
-const char HTTP_OK[] = "HTTP/1.1 200 OK\r\n\r\n";
+#define DEBUG
 
 int main() {
   // Disable output buffering
@@ -75,10 +75,34 @@ int main() {
     perror("read from socket failed");
     return 1;
   }
-
   printf("%s\n", recvBuf);
-  printf("sending OK\n");
-  ret = write(current_sock, HTTP_OK, sizeof(HTTP_OK) / sizeof(char));
+
+  http_request *request = parseRequest(recvBuf);
+  if (!request) {
+    fprintf(stderr, "Failed to parse request\n");
+    return 1;
+  }
+
+#ifdef DEBUG
+  printf("parsed request:\n");
+  printf("Method: %s\n", (request->method == GET) ? "GET" : "unknown");
+  printf("path: %s\n", request->path);
+#endif
+
+  if (request->method == GET) {
+    if (request->path[0] == '/' && request->path[1] == '\0') {
+      printf("sending OK\n");
+      ret = write(current_sock, HTTP_OK, sizeof(HTTP_OK) / sizeof(char));
+    } else {
+      printf("sending 404\n");
+
+      ret = write(current_sock, HTTP_404, sizeof(HTTP_404) / sizeof(char));
+    }
+    if (ret < 0) {
+      perror("writing to socket failed!");
+      return 1;
+    }
+  }
 
   close(server_fd);
 
