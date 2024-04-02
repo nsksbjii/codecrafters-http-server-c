@@ -96,10 +96,11 @@ int main() {
       ret = write(current_sock, HTTP_OK, sizeof(HTTP_OK) / sizeof(char));
     } else {
       char *path1 = strtok(request->path, "/");
-      printf("%s\n", path1);
+      // printf("%s\n", path1);
       if (strcmp(path1, "echo") == 0) {
         printf("calling echo hadler!\n");
         path1 = strtok(NULL, "/");
+        path1[strlen(path1)] = '/';
         echoHandler(path1, current_sock);
       } else {
 
