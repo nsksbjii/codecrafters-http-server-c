@@ -12,6 +12,7 @@
 #define PACKET_BUF_SZ 4096
 #define DEBUG
 
+int handleConnection(int current_sock);
 int main() {
   // Disable output buffering
   setbuf(stdout, NULL);
@@ -56,18 +57,32 @@ int main() {
     printf("Listen failed: %s \n", strerror(errno));
     return 1;
   }
+  while (1) {
 
-  printf("Waiting for a client to connect...\n");
-  client_addr_len = sizeof(client_addr);
+    printf("Waiting for a client to connect...\n");
+    client_addr_len = sizeof(client_addr);
 
-  int current_sock =
-      accept(server_fd, (struct sockaddr *)&client_addr, &client_addr_len);
-  if (current_sock < 0) {
-    perror("accept");
-    return 1;
+    int current_sock =
+        accept(server_fd, (struct sockaddr *)&client_addr, &client_addr_len);
+    if (current_sock < 0) {
+      perror("accept");
+      return 1;
+    }
+    printf("Client connected\n");
+
+    int pid;
+    if ((pid = fork()) == -1) {
+      perror("fork");
+      return 1;
+    } else if (pid == 0) { // child
+      close(server_fd);
+      handleConnection(current_sock);
+    } else {
+      close(current_sock);
+    }
   }
-  printf("Client connected\n");
-
+}
+int handleConnection(int current_sock) {
   char recvBuf[PACKET_BUF_SZ];
   int ret;
 
@@ -122,7 +137,6 @@ int main() {
     }
   }
 
-  close(server_fd);
-
+  close(current_sock);
   return 0;
 }

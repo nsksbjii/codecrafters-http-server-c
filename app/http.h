@@ -22,6 +22,6 @@ typedef struct {
 } http_request;
 
 http_request *parseRequest(char *request);
-void freeRequest(http_request *toFree);
+/* void freegequest(http_request *toFree); */
 
 #endif
