@@ -119,7 +119,7 @@ int getFileHandler(char *directory, char *filename, int sock) {
 
   if (!file) {
     printf("filenot found sinding 404\n");
-    if (write(sock, HTTP_404, sizeof(HTTP_404) < sizeof(HTTP_404))) {
+    if (write(sock, HTTP_404, sizeof(HTTP_404)) < 0) {
       perror("getFile: failed to send 404");
       return -1;
     }
