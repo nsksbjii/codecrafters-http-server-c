@@ -127,7 +127,7 @@ int handleConnection(int current_sock, char *directory) {
         printf("returning user agent!\n");
         userAgentHandler(request->user_agent, current_sock);
 
-      } else if (strcmp(path1, "file") == 0) {
+      } else if (strcmp(path1, "files") == 0) {
         printf("sending file");
         path1 = strtok(NULL, "/");
         path1[strlen(path1)] = '/';
