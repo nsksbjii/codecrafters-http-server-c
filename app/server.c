@@ -12,8 +12,8 @@
 #define PACKET_BUF_SZ 4096
 #define DEBUG
 
-int handleConnection(int current_sock);
-int main() {
+int handleConnection(int current_sock, char *directory);
+int server(char *directory) {
   // Disable output buffering
   setbuf(stdout, NULL);
 
@@ -76,14 +76,14 @@ int main() {
       return 1;
     } else if (pid == 0) { // child
       close(server_fd);
-      handleConnection(current_sock);
+      handleConnection(current_sock, directory);
       return 0;
     } else {
       close(current_sock);
     }
   }
 }
-int handleConnection(int current_sock) {
+int handleConnection(int current_sock, char *directory) {
   char recvBuf[PACKET_BUF_SZ];
   int ret;
 
@@ -126,6 +126,14 @@ int handleConnection(int current_sock) {
 
         printf("returning user agent!\n");
         userAgentHandler(request->user_agent, current_sock);
+
+      } else if (strcmp(path1, "file") == 0) {
+        printf("sending file");
+        path1 = strtok(NULL, "/");
+        path1[strlen(path1)] = '/';
+        // char *directory = "/home/ketrptr/code/codecrafters/httpServerC/"
+        // "codecrafters-http-server-c/";
+        getFileHandler(directory, path1, current_sock);
 
       } else {
 
