@@ -171,7 +171,7 @@ int sendFile(FILE *file, int sock) {
   // construct response
   int ret;
   char *dest;
-  const char *header = HTTP_OK;
+  const char *header = "HTTP/1.1 200 OK\r\n";
   const char *content_typeOctetStream =
       "Content-Type: application/octet-stream\r\n";
   const char *consten_len = "Content-Length: ";
