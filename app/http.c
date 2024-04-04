@@ -115,7 +115,7 @@ http_request *parseRequest(char *request) {
     char *contentLenStr = strtok(NULL, " ");
     parsedResponse->bodyLen = atoi(contentLenStr);
     if (parsedResponse->bodyLen <= 0) {
-      printf(stderr, "failed to parse contentLen\n");
+      fprintf(stderr, "failed to parse contentLen\n");
       free(parsedResponse);
       return NULL;
     }
