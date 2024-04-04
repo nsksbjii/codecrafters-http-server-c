@@ -120,7 +120,8 @@ http_request *parseRequest(char *request) {
     printf("leni4: %s\n", line4);
 
     char *tok1 = strtok(line4, " ");
-    if (strcmp(tok1, "Accept:") != 0) {
+    if (strcmp(tok1, "Accept:") != 0 && strcmp(tok1, "Accept-Encoding:") != 0) {
+
       char *contentLenStr = strtok(NULL, " ");
       parsedResponse->bodyLen = atoi(contentLenStr);
       if (parsedResponse->bodyLen <= 0) {
@@ -147,6 +148,7 @@ http_request *parseRequest(char *request) {
         return NULL;
       }
     } else if (line5) {
+      printf("herae\n");
       char *tok1 = strtok(line5, " ");
       char *contentLenStr = strtok(NULL, " ");
       parsedResponse->bodyLen = atoi(contentLenStr);
