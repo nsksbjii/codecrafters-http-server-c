@@ -101,15 +101,15 @@ http_request *parseRequest(char *request) {
     size_t user_len = parsedResponse->user_agent - user_end;
   }
 
-  if (line4) {
+  if (line5) {
     // content-type
     // fuck this
-    printf("line4: %s\n", line4);
+    printf("line5: %s\n", line4);
   }
 
-  if (line5) {
+  if (line4) {
     // ocntent len
-    printf("leni5: %s\n", line5);
+    printf("leni4: %s\n", line5);
 
     char *tok1 = strtok(line5, " ");
     char *contentLenStr = strtok(NULL, " ");
