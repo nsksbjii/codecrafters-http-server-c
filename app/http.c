@@ -104,38 +104,40 @@ http_request *parseRequest(char *request) {
   if (line5) {
     // content-type
     // fuck this
-    printf("line5: %s\n", line4);
+    printf("line5: %s\n", line5);
   }
 
   if (line4) {
     // ocntent len
-    printf("leni4: %s\n", line5);
+    printf("leni4: %s\n", line4);
 
-    char *tok1 = strtok(line5, " ");
-    char *contentLenStr = strtok(NULL, " ");
-    parsedResponse->bodyLen = atoi(contentLenStr);
-    if (parsedResponse->bodyLen <= 0) {
-      fprintf(stderr, "failed to parse contentLen\n");
-      free(parsedResponse);
-      return NULL;
-    }
-    if (!contentLenStr) {
-      perror("failed to tokenize rewuenst");
-    }
+    char *tok1 = strtok(line4, " ");
+    if (strcmp(tok1, "Accept:") != 0) {
+      char *contentLenStr = strtok(NULL, " ");
+      parsedResponse->bodyLen = atoi(contentLenStr);
+      if (parsedResponse->bodyLen <= 0) {
+        fprintf(stderr, "failed to parse contentLen\n");
+        free(parsedResponse);
+        return NULL;
+      }
+      if (!contentLenStr) {
+        perror("failed to tokenize rewuenst");
+      }
 
-    printf("%d\n", parsedResponse->bodyLen);
-    parsedResponse->body = malloc(parsedResponse->bodyLen);
-    if (!parsedResponse->body) {
-      perror("failed to malloc bodyBuf");
-      free(parsedResponse);
-      return NULL;
-    }
-    printf("Body:\n%s\n", (body == NULL) ? "NULL" : body);
-    void *ret = memcpy(parsedResponse->body, body, parsedResponse->bodyLen);
-    if (!ret) {
-      perror("failed to memcpy request body");
-      free(parsedResponse);
-      return NULL;
+      printf("%d\n", parsedResponse->bodyLen);
+      parsedResponse->body = malloc(parsedResponse->bodyLen);
+      if (!parsedResponse->body) {
+        perror("failed to malloc bodyBuf");
+        free(parsedResponse);
+        return NULL;
+      }
+      printf("Body:\n%s\n", (body == NULL) ? "NULL" : body);
+      void *ret = memcpy(parsedResponse->body, body, parsedResponse->bodyLen);
+      if (!ret) {
+        perror("failed to memcpy request body");
+        free(parsedResponse);
+        return NULL;
+      }
     }
   }
 
