@@ -31,10 +31,10 @@ http_request *parseRequest(char *request) {
   char *line2 = strtok(NULL, "\r\n");    // host
   char *line3 = strtok(NULL, "\r\n");    // user-agent
   char *line4 = strtok(NULL, "\r\n");    // content-type
-  char *line5 = strtok(NULL, "\r\n");    // content-len
-  strtok(NULL, "\r\n");                  // content-len
-  // strtok(NULL, "\r\n");                  // content-len
-  char *body = strtok(NULL, "\r\n"); // content-len
+  char *line5 = strtok(NULL, "\r\n");
+  char *maybeBody = strtok(NULL, "\r\n");
+  // strtok(NULL, "\r\n");
+  char *body = strtok(NULL, "\r\n");
 
   printf("requestlines:\n");
   printf("line1: %s\n", line1);
@@ -141,7 +141,8 @@ http_request *parseRequest(char *request) {
         return NULL;
       }
       printf("Body:\n%s\n", (body == NULL) ? "NULL" : body);
-      void *ret = memcpy(parsedResponse->body, body, parsedResponse->bodyLen);
+      void *ret = memcpy(parsedResponse->body, (body) ? body : maybeBody,
+                         parsedResponse->bodyLen);
       if (!ret) {
         perror("failed to memcpy request body");
         free(parsedResponse);
@@ -169,7 +170,8 @@ http_request *parseRequest(char *request) {
         return NULL;
       }
       printf("Body:\n%s\n", (body == NULL) ? "NULL" : body);
-      void *ret = memcpy(parsedResponse->body, body, parsedResponse->bodyLen);
+      void *ret = memcpy(parsedResponse->body, (body) ? body : maybeBody,
+                         parsedResponse->bodyLen);
       if (!ret) {
         perror("failed to memcpy request body");
         free(parsedResponse);
