@@ -102,7 +102,7 @@ int handleConnection(int current_sock, char *directory) {
 
   // #ifdef DEBUG
   printf("parsed request:\n");
-  printf("Method: %s\n", (request->method == GET) ? "GET" : "unknown");
+  printf("Method: %s\n", (request->method == GET) ? "GET" : "notGET");
   printf("path: %s\n", request->path);
   printf("host: %s\n", request->host);
   printf("user-agent: %s\n", request->user_agent);
@@ -146,8 +146,22 @@ int handleConnection(int current_sock, char *directory) {
       perror("writing to socket failed!");
       return 1;
     }
-  }
+  } else if (request->method == POST) {
+    printf("got POST request\n");
+    char *path1 = strtok(request->path, "/");
+    if (strcmp(path1, "files") == 0) {
+      printf("storing file\n");
+      request->path[strlen(request->path)] = '/';
+      postFileHandler(directory, request, current_sock);
 
+    } else {
+
+      printf("sending 404\n");
+
+      ret = write(current_sock, HTTP_404, sizeof(HTTP_404) / sizeof(char));
+    }
+  }
+  free(request);
   close(current_sock);
   return 0;
 }

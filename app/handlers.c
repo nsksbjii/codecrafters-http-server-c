@@ -195,7 +195,7 @@ int sendFile(FILE *file, int sock) {
     return -1;
   }
   printf("responseBuff: \n\n");
-  printf("%s", responseBuf);
+  printf("%s\n", responseBuf);
 
   int sent = write(sock, responseBuf, ret);
   if (sent != ret) {
@@ -209,5 +209,51 @@ int sendFile(FILE *file, int sock) {
 
   free(responseBuf);
   free(fileBuf);
+  return ret;
+}
+
+int postFileHandler(char *directory, http_request *request, int sock) {
+  printf("postFileHandler path: %s\n", request->path);
+  char *filename = strtok(request->path, "/");
+  if (strcmp(filename, "files") != 0) {
+    fprintf(stderr, "invalid path!\n");
+    return -1;
+  }
+  printf("%s\n", filename);
+  filename = strtok(NULL, "/");
+  printf("%s\n", filename);
+  if (filename == NULL) {
+    fprintf(stderr, "filename is NULL\n");
+    return -1;
+  }
+  printf("%s\n", filename);
+  char absPathBuf[MAX_PATH_SIZE];
+  char *absPath = strcat(absPathBuf, directory);
+  absPath = strcat(absPathBuf, filename);
+  if (!absPath) {
+    perror("failed to conacatenate path");
+    return -1;
+  }
+
+  FILE *file = fopen(absPath, "w+");
+  if (!file) {
+    perror("failed to open file");
+    return -1;
+  }
+
+  size_t ret = fwrite(request->body, 1, request->bodyLen, file);
+  if (ret != request->bodyLen) {
+    perror("write failed");
+    return -1;
+  }
+
+  printf("wrote %zu bytes to %s\n", ret, absPath);
+  printf("sending 201\n");
+  ret = write(sock, HTTP_201, strlen(HTTP_201));
+  if (ret != strlen(HTTP_201)) {
+    perror("sending reponse failed");
+    return -1;
+  }
+
   return ret;
 }

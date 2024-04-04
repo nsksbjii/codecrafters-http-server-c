@@ -19,9 +19,14 @@ http_request *parseRequest(char *request) {
     perror("requestinit failed");
     return NULL;
   }
-  char *line1 = strtok(request, "\r\n");
-  char *line2 = strtok(NULL, "\r\n");
-  char *line3 = strtok(NULL, "\r\n");
+  char *line1 = strtok(request, "\r\n"); // header
+  char *line2 = strtok(NULL, "\r\n");    // host
+  char *line3 = strtok(NULL, "\r\n");    // user-agent
+  char *line4 = strtok(NULL, "\r\n");    // content-type
+  char *line5 = strtok(NULL, "\r\n");    // content-len
+  strtok(NULL, "\r\n");                  // content-len
+  // strtok(NULL, "\r\n");                  // content-len
+  char *body = strtok(NULL, "\r\n"); // content-len
 
   printf("requestlines:\n");
   printf("line1: %s\n", line1);
@@ -33,7 +38,14 @@ http_request *parseRequest(char *request) {
   if (strcmp(method, "GET") == 0) {
     printf("Got HTTP GET request\n");
     parsedResponse->method = GET;
+
+  } else if (strcmp(method, "POST") == 0) {
+
+    printf("HTTP POST request\n");
+    parsedResponse->method = POST;
+
   } else {
+
     fprintf(stderr, "unknown HTTP method %s\n", method);
     free(parsedResponse);
     return NULL;
@@ -71,6 +83,7 @@ http_request *parseRequest(char *request) {
     char *host_end = strcpy(parsedResponse->host, (line2 + 6));
     if (!host_end) {
       perror("FUCK");
+      free(parsedResponse);
       return NULL;
     }
     size_t host_len = parsedResponse->host - host_end;
@@ -82,9 +95,48 @@ http_request *parseRequest(char *request) {
     char *user_end = strcpy(parsedResponse->user_agent, (line3 + 12));
     if (!user_end) {
       perror("FUCK");
+      free(parsedResponse);
       return NULL;
     }
     size_t user_len = parsedResponse->user_agent - user_end;
+  }
+
+  if (line4) {
+    // content-type
+    // fuck this
+    printf("line4: %s\n", line4);
+  }
+
+  if (line5) {
+    // ocntent len
+    printf("leni5: %s\n", line5);
+
+    char *tok1 = strtok(line5, " ");
+    char *contentLenStr = strtok(NULL, " ");
+    parsedResponse->bodyLen = atoi(contentLenStr);
+    if (parsedResponse->bodyLen <= 0) {
+      printf(stderr, "failed to parse contentLen\n");
+      free(parsedResponse);
+      return NULL;
+    }
+    if (!contentLenStr) {
+      perror("failed to tokenize rewuenst");
+    }
+
+    printf("%d\n", parsedResponse->bodyLen);
+    parsedResponse->body = malloc(parsedResponse->bodyLen);
+    if (!parsedResponse->body) {
+      perror("failed to malloc bodyBuf");
+      free(parsedResponse);
+      return NULL;
+    }
+    printf("Body:\n%s\n", (body == NULL) ? "NULL" : body);
+    void *ret = memcpy(parsedResponse->body, body, parsedResponse->bodyLen);
+    if (!ret) {
+      perror("failed to memcpy request body");
+      free(parsedResponse);
+      return NULL;
+    }
   }
 
   printf("returning requeest struct\n");

@@ -6,6 +6,7 @@
 
 #define HTTP_OK "HTTP/1.1 200 OK\r\n\r\n"
 #define HTTP_404 "HTTP/1.1 404 Not Found\r\n\r\n"
+#define HTTP_201 "HTTP/1.1 201 Created\r\n\r\n"
 
 typedef enum {
   GET,
@@ -19,6 +20,9 @@ typedef struct {
   char http_version[256];
   char host[256];
   char user_agent[1024];
+  /* char *content_type; */
+  int bodyLen;
+  char *body;
 } http_request;
 
 http_request *parseRequest(char *request);
