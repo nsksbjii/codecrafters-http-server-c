@@ -3,6 +3,14 @@
 #include <stdlib.h>
 #include <string.h>
 
+/*
+ * TODO do parser right
+ * line order
+ * line numbers
+ * => suck
+ * strcmp!!
+ */
+
 // #define MAX_PATH_SIZE 512
 // #define MAX_VERSION_SIZE 32
 
@@ -138,9 +146,37 @@ http_request *parseRequest(char *request) {
         free(parsedResponse);
         return NULL;
       }
-    }
-  }
+    } else if (line5) {
+      char *tok1 = strtok(line4, " ");
+      if (strcmp(tok1, "Accept:") != 0) {
+        char *contentLenStr = strtok(NULL, " ");
+        parsedResponse->bodyLen = atoi(contentLenStr);
+        if (parsedResponse->bodyLen <= 0) {
+          fprintf(stderr, "failed to parse contentLen\n");
+          free(parsedResponse);
+          return NULL;
+        }
+        if (!contentLenStr) {
+          perror("failed to tokenize rewuenst");
+        }
 
-  printf("returning requeest struct\n");
-  return parsedResponse;
-}
+        printf("%d\n", parsedResponse->bodyLen);
+        parsedResponse->body = malloc(parsedResponse->bodyLen);
+        if (!parsedResponse->body) {
+          perror("failed to malloc bodyBuf");
+          free(parsedResponse);
+          return NULL;
+        }
+        printf("Body:\n%s\n", (body == NULL) ? "NULL" : body);
+        void *ret = memcpy(parsedResponse->body, body, parsedResponse->bodyLen);
+        if (!ret) {
+          perror("failed to memcpy request body");
+          free(parsedResponse);
+          return NULL;
+        }
+      }
+    }
+
+    printf("returning requeest struct\n");
+    return parsedResponse;
+  }
