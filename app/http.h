@@ -10,6 +10,9 @@
 #define HTTP_501 "HTTP/1.1 501 Not Implemented\r\n\r\n"
 #define HTTP_406 "HTTP/1.1 406 Not Acceptable\r\n\r\n"
 #define HTTP_201 "HTTP/1.1 201 Created\r\n\r\n"
+#define HTTP_500 "HTTP/1.1 500 Internal Server Error\r\n\r\n"
+
+#define NrRequestHeaders 30
 
 typedef enum {
   GET,
@@ -42,18 +45,27 @@ typedef enum {
   Referer,
   TE,
   UserAgent,
+  Allow,
+  ContentEncoding,
+  ContentLanguage,
+  ContentLength,
+  ContentLocation,
+  ContentMD5,
+  ContentRange,
+  contentType,
+  Expires,
+  LastModified,
+  extensionHeader
 } RequestHader;
 
 typedef struct {
   HTTP_METHOD method;
   char path[512];
   char http_version[256];
-  char host[256];
-  char user_agent[1024];
-  /* char *content_type; */
   int bodyLen;
   char *body;
-  char *headers[sizeof(RequestHader)];
+  char *headers[NrRequestHeaders];
+  char *header;
 } http_request;
 
 http_request *parseRequest(char *request);

@@ -9,7 +9,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-#define PACKET_BUF_SZ 4096
+#define MAX_REQUEST_SIZE 8192
 #define DEBUG
 
 int handleConnection(int current_sock, char *directory);
@@ -84,10 +84,10 @@ int server(char *directory) {
   }
 }
 int handleConnection(int current_sock, char *directory) {
-  char recvBuf[PACKET_BUF_SZ];
+  char recvBuf[MAX_REQUEST_SIZE];
   int ret;
 
-  ret = read(current_sock, recvBuf, PACKET_BUF_SZ);
+  ret = read(current_sock, recvBuf, MAX_REQUEST_SIZE);
   if (ret < 0) {
     perror("read from socket failed");
     return 1;
@@ -97,16 +97,11 @@ int handleConnection(int current_sock, char *directory) {
   http_request *request = parseRequest(recvBuf);
   if (!request) {
     fprintf(stderr, "Failed to parse request\n");
+    write(current_sock, HTTP_500, sizeof(HTTP_500));
+    free(request);
+    close(current_sock);
     return 1;
   }
-
-  // #ifdef DEBUG
-  printf("parsed request:\n");
-  printf("Method: %s\n", (request->method == GET) ? "GET" : "notGET");
-  printf("path: %s\n", request->path);
-  printf("host: %s\n", request->host);
-  printf("user-agent: %s\n", request->user_agent);
-  // #endif
 
   if (request->method == GET) {
     printf("processing GET request\n");
@@ -125,21 +120,19 @@ int handleConnection(int current_sock, char *directory) {
       } else if (strcmp(path1, "user-agent") == 0) {
 
         printf("returning user agent!\n");
-        userAgentHandler(request->user_agent, current_sock);
+        userAgentHandler(request->headers[UserAgent], current_sock);
 
       } else if (strcmp(path1, "files") == 0) {
         printf("sending file");
         path1 = strtok(NULL, "/");
         path1[strlen(path1)] = '/';
-        // char *directory = "/home/ketrptr/code/codecrafters/httpServerC/"
-        // "codecrafters-http-server-c/";
         getFileHandler(directory, path1, current_sock);
 
       } else {
 
         printf("sending 404\n");
 
-        ret = write(current_sock, HTTP_404, sizeof(HTTP_404) / sizeof(char));
+        ret = write(current_sock, HTTP_404, sizeof(HTTP_404));
       }
     }
     if (ret < 0) {
@@ -156,9 +149,9 @@ int handleConnection(int current_sock, char *directory) {
 
     } else {
 
-      printf("sending 404\n");
+      printf("sending 406\n");
 
-      ret = write(current_sock, HTTP_404, sizeof(HTTP_404) / sizeof(char));
+      ret = write(current_sock, HTTP_406, sizeof(HTTP_406));
     }
   }
   free(request);

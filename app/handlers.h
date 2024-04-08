@@ -7,5 +7,4 @@ int userAgentHandler(char *user_agent, int sock);
 int getFileHandler(char *directory, char *filename, int sock);
 int postFileHandler(char *directory, http_request *request, int sock);
 
-#endif // !HADLERS
-#define HANDERLS
+#endif

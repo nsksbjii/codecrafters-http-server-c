@@ -90,25 +90,11 @@ int getFileHandler(char *directory, char *filename, int sock) {
     fprintf(stderr, "path to long!\n");
     return -1;
   }
-
-  printf("dir: %s\n", directory);
-  printf("file: %s\n", filename);
-  printf("dir: %s\n", directory);
-
-  // open directory
-  // DIR *working_dir = opendir(directory);
-  // if (!working_dir) {
-  //   perror("open dir failed");
-  //   return -1;
-  // }
   //
-  // struct dirent *currentFile;
-  // while ((currentFile = readdir(working_dir)) != NULL) {
-  //   if (strcmp(currentFile->d_name, filename) == 0) {
-  //     sendFile(currentFile, sock);
-  //     return 0;
-  //   }
-  // }
+  // printf("dir: %s\n", directory);
+  // printf("file: %s\n", filename);
+  // printf("dir: %s\n", directory);
+
   char pathBuf[MAX_PATH_SIZE];
   char *path = strcat(pathBuf, directory);
   path = strcat(pathBuf, filename);
@@ -128,13 +114,6 @@ int getFileHandler(char *directory, char *filename, int sock) {
     printf("found file.. tryinng to send it\n");
     sendFile(file, sock);
   }
-
-  /*
-   * If <filename> exists in <directory>, you'll need to respond with a 200 OK
-   * response. The response should have a content type of
-   * application/octet-stream, and it should contain the contents of the file
-   * as the body. If the file doesn't exist, return a 404.
-   */
   return 0;
 }
 
