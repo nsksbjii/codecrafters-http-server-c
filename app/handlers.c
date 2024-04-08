@@ -184,7 +184,7 @@ int sendFile(FILE *file, int sock) {
     return -1;
   }
 
-  printf("sent %dbytes\n", sent);
+  printf("sent %d bytes\n", sent);
 
   free(responseBuf);
   free(fileBuf);
@@ -192,15 +192,12 @@ int sendFile(FILE *file, int sock) {
 }
 
 int postFileHandler(char *directory, http_request *request, int sock) {
-  printf("postFileHandler path: %s\n", request->path);
   char *filename = strtok(request->path, "/");
   if (strcmp(filename, "files") != 0) {
     fprintf(stderr, "invalid path!\n");
     return -1;
   }
-  printf("%s\n", filename);
   filename = strtok(NULL, "/");
-  printf("%s\n", filename);
   if (filename == NULL) {
     fprintf(stderr, "filename is NULL\n");
     return -1;

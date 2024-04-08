@@ -1,7 +1,6 @@
 [![progress-banner](https://backend.codecrafters.io/progress/http-server/560ddbcc-3d4e-44ce-b1b2-f1e1ab8397fc)](https://app.codecra
 │ fters.io/users/codecrafters-bot?r=2qF)
 
-This is a starting point for C solutions to the
 ["Build Your Own HTTP server" Challenge](https://app.codecrafters.io/courses/http-server/overview)
    
   [HTTP](https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol) is the
