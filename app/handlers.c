@@ -210,7 +210,7 @@ int postFileHandler(char *directory, http_request *request, int sock) {
   char *absPath = strcat(absPathBuf, directory);
   absPath = strcat(absPathBuf, filename);
   if (!absPath) {
-    perror("failed to conacatenate path");
+    perror("failed to strcat path");
     return -1;
   }
 

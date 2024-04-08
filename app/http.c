@@ -92,15 +92,11 @@ http_request *parseRequest(char *request) {
 int parseRequestLine(char *request, char ***current_line,
                      http_request *parsedResponse) {
 
-  // printf("parseRequestlineGot: %s", request);
   if (request == NULL || current_line == NULL) {
     fprintf(stderr, "parseRequestLine: empty input\n");
   }
 
-  // printf("tokenixing request by lines\n");
   char *requestLine = strtok_r(request, "\r\n", *current_line);
-  // printf("parsing equest line : %s\n", requestLine);
-  // printf("trsdsadljksajdlksajdlksaj\n\n\n\n\n");
   if (requestLine == NULL) {
     perror("request line is NULL");
     return -1;
@@ -128,9 +124,6 @@ int parseRequestLine(char *request, char ***current_line,
   }
   printf("gotPath: %s\n", path);
   char *path_end = strcpy(parsedResponse->path, path);
-  if (!path_end) {
-    perror("FUCK");
-  }
   size_t path_len = parsedResponse->path - path_end;
 
   char *version = strtok(NULL, " ");
