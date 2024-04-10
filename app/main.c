@@ -4,8 +4,7 @@
 int main(int argc, char **argv) {
   if (argc != 3) {
     printf("useage:\n %s --directory PATH\n", argv[0]);
-    server("/home/ketrptr/code/codecrafters/httpServerC/"
-           "codecrafters-http-server-c/");
+    server("default path");
     return 0;
   }
 
